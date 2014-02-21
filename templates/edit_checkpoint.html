@@ -1,0 +1,251 @@
+<form class="form-horizontal" role="form" method="POST" action="{baseURL}/edit_checkpoint_update{^newCheckpoint}/{doc._id}{/newCheckpoint}">
+    <fieldset>
+        <legend>{?newCheckpoint}Add{/newCheckpoint}{^newCheckpoint}Edit{/newCheckpoint} Checkpoint</legend>
+
+        <div class="form-group">
+            <label for="checkpoint_name" class="control-label col-sm-2">Name</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="checkpoint_name" name="checkpoint_name" {?newCheckpoint}placeholder="Checkpoint name"{/newCheckpoint} {^newCheckpoint}{?doc}value="{doc.checkpoint_name}"{/doc}{/newCheckpoint}/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="order_nr" class="control-label col-sm-2">Order of checkpoint</label>
+            <div class="col-sm-2">
+                <input type="number" class="form-control" id="order_nr" name="order_nr" min="1" max="1000" value="{?newCheckpoint}1{/newCheckpoint}{^newCheckpoint}{doc.order_nr}{/newCheckpoint}"/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <hr class="col-sm-offset-2 col-sm-6">
+        </div>
+
+        <div class="form-group">
+            <label for="updates" class="control-label col-sm-2">Update frequency</label>
+            <div class="col-sm-2">
+                <select class="form-control" id="updates" name="updates">
+                    <option value="1" {?updates_1}selected{/updates_1}>once</option>
+                    <option value="2" {?updates_2}selected{/updates_2}>twice</option>
+                    <option value="3" {?updates_3}selected{/updates_3}>three times</option>
+                    <option value="4" {?updates_4}selected{/updates_4}>four times</option>
+                    <option value="5" {?updates_5}selected{/updates_5}>five times</option>
+                    <option value="6" {?updates_6}selected{/updates_6}>six times</option>
+                    <option value="7" {?updates_7}selected{/updates_7}>seven times</option>
+                </select>
+            </div>
+
+            <label for="time_period" class="control-label col-sm-2">every</label>
+            <div class="col-sm-2">
+                <select class="form-control" id="time_period" name="time_period">
+                    <option value="hour" {?time_period_hour}selected{/time_period_hour}>hour</option>
+                    <option value="day" {?time_period_day}selected{/time_period_day}>day</option>
+                    <option value="week" {?time_period_week}selected{/time_period_week}>week</option>
+                    <option value="month" {?time_period_month}selected{/time_period_month}>month</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+
+            <label for="start_time" class="control-label col-sm-2">Start time</label>
+            <div class="col-sm-2">
+                <select class="form-control" id="start_time" name="start_time" value="{?newCheckpoint}1{/newCheckpoint}{^newCheckpoint}{doc.start_time}{/newCheckpoint}">
+                    <option value="0" {?start_time_0}selected{/start_time_0}>00:00</option>
+                    <option value="1" {?start_time_1}selected{/start_time_1}>01:00</option>
+                    <option value="2" {?start_time_2}selected{/start_time_2}>02:00</option>
+                    <option value="3" {?start_time_3}selected{/start_time_3}>03:00</option>
+                    <option value="4" {?start_time_4}selected{/start_time_4}>04:00</option>
+                    <option value="5" {?start_time_5}selected{/start_time_5}>05:00</option>
+                    <option value="6" {?start_time_6}selected{/start_time_6}>06:00</option>
+                    <option value="7" {?start_time_7}selected{/start_time_7}>07:00</option>
+                    <option value="8" {?start_time_8}selected{/start_time_8}>08:00</option>
+                    <option value="9" {?start_time_9}selected{/start_time_9}>09:00</option>
+                    <option value="10" {?start_time_10}selected{/start_time_10}>10:00</option>
+                    <option value="11" {?start_time_11}selected{/start_time_11}>11:00</option>
+                    <option value="12" {?start_time_12}selected{/start_time_12}>12:00</option>
+                    <option value="13" {?start_time_13}selected{/start_time_13}>13:00</option>
+                    <option value="14" {?start_time_14}selected{/start_time_14}>14:00</option>
+                    <option value="15" {?start_time_15}selected{/start_time_15}>15:00</option>
+                    <option value="16" {?start_time_16}selected{/start_time_16}>16:00</option>
+                    <option value="17" {?start_time_17}selected{/start_time_17}>17:00</option>
+                    <option value="18" {?start_time_18}selected{/start_time_18}>18:00</option>
+                    <option value="19" {?start_time_19}selected{/start_time_19}>19:00</option>
+                    <option value="20" {?start_time_20}selected{/start_time_20}>20:00</option>
+                    <option value="21" {?start_time_21}selected{/start_time_21}>21:00</option>
+                    <option value="22" {?start_time_22}selected{/start_time_22}>22:00</option>
+                    <option value="23" {?start_time_23}selected{/start_time_23}>23:00</option>
+                </select>
+            </div>
+
+            <label for="start_day" class="control-label col-sm-2">Start day</label>
+            <div class="col-sm-2">
+                <select class="form-control" id="start_day" name="start_day">
+                    <option value="2" {?start_day_2}selected{/start_day_2}>monday</option>
+                    <option value="3" {?start_day_3}selected{/start_day_3}>tuesday</option>
+                    <option value="4" {?start_day_4}selected{/start_day_4}>wednesday</option>
+                    <option value="5" {?start_day_5}selected{/start_day_5}>thursday</option>
+                    <option value="6" {?start_day_6}selected{/start_day_6}>friday</option>
+                    <option value="7" {?start_day_7}selected{/start_day_7}>saturday</option>
+                    <option value="1" {?start_day_1}selected{/start_day_1}>sunday</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-sm-offset-2 col-sm-2">
+                <input id="include_weekends" name="include_weekends" type="checkbox" value="include_weekends" {?doc.include_weekends}checked="true"{/doc.include_weekends}">
+                Include weekends
+            </label>
+        </div>
+
+        <div class="form-group">
+            <hr class="col-sm-offset-2 col-sm-6">
+        </div>
+
+        <div class="form-group">
+            <label for="description" class="control-label col-sm-2">Description</label>
+            <div class="col-sm-6">
+                <textarea rows="3" class="form-control" id="description" name="description" {?newCheckpoint}placeholder="Description"{/newCheckpoint}>{?doc}{doc.description}{/doc}</textarea>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <hr class="col-sm-offset-2 col-sm-6">
+        </div>
+
+        <div class="form-group">
+            <label for="error_tag_1" class="control-label col-sm-2">Error tag 1</label>
+            <div class="col-sm-2">
+                <input id="error_tag_1" name="error_tag_1" type="text" class="form-control"
+                       value="{?doc.error_tag_1}{doc.error_tag_1}{/doc.error_tag_1}"/>
+            </div>
+
+            <label for="error_tag_2" class="control-label col-sm-2">Error tag 2</label>
+            <div class="col-sm-2">
+                <input id="error_tag_2" name="error_tag_2" type="text" class="col-sm-4 form-control"
+                       value="{?doc.error_tag_2}{doc.error_tag_2}{/doc.error_tag_2}"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="error_tag_3" class="control-label col-sm-2">Error tag 3</label>
+            <div class="col-sm-2">
+                <input id="error_tag_3" name="error_tag_3" type="text" class="col-sm-4 form-control"
+                       value="{?doc.error_tag_3}{doc.error_tag_3}{/doc.error_tag_3}"/>
+            </div>
+
+            <label for="error_tag_4" class="control-label col-sm-2">Error tag 4</label>
+            <div class="col-sm-2">
+                <input id="error_tag_4" name="error_tag_4" type="text" class="col-sm-4 form-control"
+                       value="{?doc.error_tag_4}{doc.error_tag_4}{/doc.error_tag_4}"/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <hr class="col-sm-offset-2 col-sm-6">
+        </div>
+
+        <div class="form-group">
+            <label for="action_tag_1" class="control-label col-sm-2">Action tag 1</label>
+            <div class="col-sm-2">
+                <input id="action_tag_1" name="action_tag_1" type="text" class="form-control"
+                       value="{?doc.action_tag_1}{doc.action_tag_1}{/doc.action_tag_1}"/>
+            </div>
+
+            <label for="action_tag_2" class="control-label col-sm-2">Action tag 2</label>
+            <div class="col-sm-2">
+                <input id="action_tag_2" name="action_tag_2" type="text" class="col-sm-4 form-control"
+                       value="{?doc.action_tag_2}{doc.action_tag_2}{/doc.action_tag_2}"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="action_tag_3" class="control-label col-sm-2">Action tag 3</label>
+            <div class="col-sm-2">
+                <input id="action_tag_3" name="action_tag_3" type="text" class="col-sm-4 form-control"
+                       value="{?doc.action_tag_3}{doc.action_tag_3}{/doc.action_tag_3}"/>
+            </div>
+
+            <label for="action_tag_4" class="control-label col-sm-2">Action tag 4</label>
+            <div class="col-sm-2">
+                <input id="action_tag_4" name="action_tag_4" type="text" class="col-sm-4 form-control"
+                       value="{?doc.action_tag_4}{doc.action_tag_4}{/doc.action_tag_4}"/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <hr class="col-sm-offset-2 col-sm-6">
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-2">
+                <button type="submit" id="submit_checkpoint" class="btn btn-default">
+                    Submit
+                </button>
+            </div>
+        </div>
+    </fieldset>
+</form>
+
+<br>
+
+{?doc}
+{?attached_image}
+
+    <div class="col-sm-offset-2 col-sm-10">
+        <img src="/{db_name}/{doc._id}/{attached_image}">
+    </div>
+    <div class="col-sm-offset-2 col-sm-10">
+        <button id="deleteImage" type="submit" class="btn btn-error" onclick="deleteImageFunc()">
+            Change image
+        </button>
+    </div>
+
+    <div class="col-sm-offset-2 col-sm-10">
+        <p id="ajaxResult"></p>
+    </div>
+
+<script>
+    function deleteImageFunc()
+    {
+        $.ajax({
+            url:"/{db_name}/{doc._id}/{attached_image}?rev={doc._rev}",
+            type: "delete",
+            success:function(result){
+                window.location.replace("{baseURL}/edit_checkpoint_show/{doc._id}");
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                $("#ajaxResult").html(errorThrown);
+            }
+        });
+    }
+</script>
+{/attached_image}
+{^attached_image}
+<div class="col-sm-offset-2 col-sm-10">
+    <form action="/{db_name}/{doc._id}" method="post" id="upload" enctype="multipart/form-data">
+        <input id="revision" type="hidden" name="_rev" value="{doc._rev}"/>
+        <input id="id" type="hidden" name="_id" value="{doc._id}"/>
+        <input id="attachment" type="file" name="_attachments"/>
+        <input type="submit" id="submit_image" value="Upload image"/>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function()
+     {
+         $("#upload").submit(function( event ) {
+             event.preventDefault();
+
+             $("#upload").ajaxSubmit({
+                 success:function (response) {
+                     window.location.replace("{baseURL}/edit_checkpoint_show/{doc._id}");
+                 },
+                 error:function (a, b, c) {
+                     var x = JSON.parse(a);
+                     alert("Error : " + x + ", b:" + b);
+                     window.location.replace("{baseURL}/edit_checkpoints_list");
+                 }
+             });
+         });
+    });
+</script>
+{/attached_image}
+{/doc}

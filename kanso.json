@@ -1,0 +1,26 @@
+{
+    "name": "dc_server_app",
+    "version": "0.0.1",
+    "description": "OOF P1 DWT. Administrate and add measurement data. Follow up results.",
+    "modules": "lib",
+    "load": "lib/app",
+    "attachments": "static",	
+	"dust": {
+    	"templates": "templates"
+    },
+    "duality": {
+    	"base_template": "base.html"
+    },
+    "dependencies": {
+    	"attachments": null,
+    	"modules": null,
+    	"properties": null,
+    	"jquery": null,
+    	"dust": null,
+    	"duality": null,
+    	"duality-dust": null,
+        "underscore": null,
+        "db": null,
+        "events": null
+    }
+}

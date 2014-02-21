@@ -1,0 +1,9 @@
+<div class="list-group">
+    {#rows}
+    <a href="{baseURL}/edit_checkpoint_show/{_id}" class="list-group-item {?active}list-group-item-info{:else}list-group-item-warning{/active}">
+        <h4 class="list-group-item-heading">{checkpoint_name}, Order nr: {order_nr}</h4>
+        <p class="list-group-item-text">{description}</p>
+    </a>
+    {/rows}
+</div>
+

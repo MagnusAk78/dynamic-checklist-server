@@ -1,0 +1,43 @@
+<div class="page-header">
+    <h3>Dynamic work tasks, checklist</h3>
+</div>
+<ul class="nav nav-pills">
+    <li class="active">
+        <a href="{baseURL}/active_checkpoints_list">Data input</a>
+    </li>
+    <li>
+        <a href="{baseURL}/view_checkpoints_list">View Checkpoints</a>
+    </li>
+    <li>
+        <a href="{baseURL}/edit_checkpoints_list">Edit Checkpoints</a>
+    </li>
+    <li>
+        <a href="{baseURL}/delete_checkpoints_list">Delete Checkpoints</a>
+    </li>
+    <li class="pull-right">
+        <a href="{baseURL}/add_checkpoint_show">Add new checkpoint</a>
+    </li>
+</ul>
+
+<hr>
+
+<div class="row">
+    <div class="col-lg-8">
+        <form class="form-inline" method="POST" action="{baseURL}/add_measurement_update">
+            <fieldset>
+                <legend>{checkpoint_name}</legend>
+                <p>{description}</p>
+                <div class="form-group">
+                    <label for="new_value">Value</label>
+                    <input type="{input}" class="form-control" name="new_value" id="new_value"/>
+                </div>
+                <input type="hidden" name="checkpoint_id" value="{checkpoint_id}"/>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-inverse"><i class="icon-plus-sign icon-white"></i>Submit
+                    </button>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>
+

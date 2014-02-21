@@ -1,0 +1,22 @@
+<div class="page-header">
+    <h3>Dynamic work tasks, checklist</h3>
+</div>
+<ul class="nav nav-pills">
+    <li {?view_checkpoints} class="active" {/view_checkpoints}>
+        <a href="{baseURL}/view_checkpoints_list">View Checkpoints</a>
+    </li>
+    <li {?edit_checkpoints} class="active" {/edit_checkpoints}>
+        <a href="{baseURL}/edit_checkpoints_list">Edit Checkpoints</a>
+    </li>
+    <li {?activate_checkpoints} class="active" {/activate_checkpoints}>
+        <a href="{baseURL}/activate_checkpoints_list">Activate checkpoint</a>
+    </li>
+    <li {?deactivate_checkpoints} class="active" {/deactivate_checkpoints}>
+    <a href="{baseURL}/deactivate_checkpoints_list">Deactivate checkpoint</a>
+    </li>
+    <li {?add_checkpoint} class="active pull-right" {:else} class="pull-right" {/add_checkpoint}>
+        <a href="{baseURL}/edit_checkpoint_show">Add new checkpoint</a>
+    </li>
+</ul>
+
+<hr>

@@ -1,0 +1,12 @@
+{#rows}
+<div class="row">
+    <form role="form" method="POST" action="{baseURL}/deactivate_checkpoint_update/{_id}">
+        <button type="submit" class="btn btn-warning"><i class="icon-plus-sign icon-white"></i>
+            {checkpoint_name}
+        </button>
+    </form>
+</div>
+{/rows}
+{^rows}
+    There are no checkpoints to deactivate.
+{/rows}

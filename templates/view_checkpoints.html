@@ -1,0 +1,14 @@
+{?rows}
+<div class="list-group">
+    {#rows}
+        <a href="{baseURL}/measurements_list?startkey=&#91;&#34;{_id}&#34;&#93;&amp;endkey=&#91;&#34;{_id}&#34;,&#123;&#125;&#93;" class="list-group-item">
+            <h4 class="list-group-item-heading">{checkpoint_name}, Order nr: {order_nr}</h4>
+            <p class="list-group-item-text">Last measurement: {last_measurement_time_string}</p>
+        </a>
+    {/rows}
+</div>
+{/rows}
+{^rows}
+    There are no checkpoints to view!
+{/rows}
+
