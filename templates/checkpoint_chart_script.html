@@ -1,0 +1,20 @@
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+    google.load("visualization", "1", {packages: ["corechart"]});
+    google.setOnLoadCallback(drawChart);
+    function drawChart() {
+        var dataTable = new google.visualization.DataTable();
+            dataTable.addColumn('date', 'Date');
+            dataTable.addColumn('number', '{checkpoint_name}');
+            dataTable.addRows([
+            {#rows}
+            [new Date({date}),{measured_value}]{comma_sign}
+            {/rows}
+    ]);
+
+    var options = {title: '{checkpoint_name}'};
+
+    var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+        chart.draw(dataTable, options);
+    }
+</script>
