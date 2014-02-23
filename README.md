@@ -1,30 +1,38 @@
-dynamic-checklist-server
-========================
+<h1>dynamic checklist server</h1>
+<p>
+Server part for an application that handles a checklist. The point is that the the frequency of required checks can be utilised to optimise the list.
+</p>
 
-Server part for an application that handles a dynamic (in time) checklist.
+<p>
+This is a non active server in the form of a Couch App. Installation requires a CouchDB NoSQL database (http://couchdb.apache.org). There are cloud based CouchDB servers available such as Cloudant (http://www.cloudant.com).
+</p>
 
+<p>
+Packaging has been done with kanso (http://kan.so). As of now kanso is not supported to run on Windows.
+</p>
+<hr>
 
-This is a non active server in the form of a Couch App. Installation requires a
-CouchDB NoSQL database. There are cloud based CouchDB servers available such as
-Cloudant (http://www.cloudant.com).
+<h2>Get it running</h2>
 
-Packaging has been done with kanso (http://kan.so). As of now kanso is not 
-supported to run on Windows.
+<ol>
+<li>Get an instance of CouchDB either by installig it or using a cloud service.</li>
 
-==========================================================================
+<li>Create a new database on the CouchDB instance.</li>
 
-Get it running...
+<li>Install Kanso.</li>
 
+<li>
+    Upload the server to the CouchDB instance.<br><br>
 
+    Run kanso install to get required dependecies.<br>
+        <code>$ kanso install</code><br><br>
 
-1. Run kanso install to get required dependecies.
+    Push the app to CouchDB whatever CouchDB instance you are using.<br>
+        <code>$ kanso push http://username:password:{couchdb-location}/{database_name}</code><br><br>
 
-  $ kanso install
-  
-2. Push the app to CouchDB whatever CouchDB instance you are using.
-
-  $ kanso push http://username:password:{couchdb-location}/{database_name}
-  
-3. Follow the link displayed after successful push.
+    Follow the link displayed after successful push.
+</li>
+    
+</ol>
 
 ==========================================================================
