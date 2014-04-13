@@ -21,72 +21,21 @@
         </div>
 
         <div class="form-group">
-            <label for="updates" class="control-label col-sm-2">Update frequency</label>
+            <label class="control-label col-sm-2">Time between updates</label>
+            <label for="time_days" class="control-label col-sm-1">Days:</label>
             <div class="col-sm-2">
-                <select class="form-control" id="updates" name="updates">
-                    <option value="1" {?updates_1}selected{/updates_1}>once</option>
-                    <option value="2" {?updates_2}selected{/updates_2}>twice</option>
-                    <option value="3" {?updates_3}selected{/updates_3}>three times</option>
-                    <option value="4" {?updates_4}selected{/updates_4}>four times</option>
-                    <option value="5" {?updates_5}selected{/updates_5}>five times</option>
-                    <option value="6" {?updates_6}selected{/updates_6}>six times</option>
-                    <option value="7" {?updates_7}selected{/updates_7}>seven times</option>
-                </select>
+                <input class="form-control" type="number" id="time_days" name="time_days" min="0" value="{?newCheckpoint}1{/newCheckpoint}{^newCheckpoint}{doc.time_days}{/newCheckpoint}">
             </div>
-
-            <label for="time_period" class="control-label col-sm-2">every</label>
+            <label for="time_hours" class="control-label col-sm-1">Hours:</label>
             <div class="col-sm-2">
-                <select class="form-control" id="time_period" name="time_period">
-                    <option value="hour" {?time_period_hour}selected{/time_period_hour}>hour</option>
-                    <option value="day" {?time_period_day}selected{/time_period_day}>day</option>
-                    <option value="week" {?time_period_week}selected{/time_period_week}>week</option>
-                    <option value="month" {?time_period_month}selected{/time_period_month}>month</option>
-                </select>
+                <input class="form-control" type="number" id="time_hours" name="time_hours" min="0" max="23" value="{?newCheckpoint}0{/newCheckpoint}{^newCheckpoint}{doc.time_hours}{/newCheckpoint}">
             </div>
         </div>
         <div class="form-group">
 
-            <label for="start_time" class="control-label col-sm-2">Start time</label>
+            <label for="exclude_weekends" class="control-label col-sm-2">Exclude weekends</label>
             <div class="col-sm-2">
-                <select class="form-control" id="start_time" name="start_time" value="{?newCheckpoint}1{/newCheckpoint}{^newCheckpoint}{doc.start_time}{/newCheckpoint}">
-                    <option value="0" {?start_time_0}selected{/start_time_0}>00:00</option>
-                    <option value="1" {?start_time_1}selected{/start_time_1}>01:00</option>
-                    <option value="2" {?start_time_2}selected{/start_time_2}>02:00</option>
-                    <option value="3" {?start_time_3}selected{/start_time_3}>03:00</option>
-                    <option value="4" {?start_time_4}selected{/start_time_4}>04:00</option>
-                    <option value="5" {?start_time_5}selected{/start_time_5}>05:00</option>
-                    <option value="6" {?start_time_6}selected{/start_time_6}>06:00</option>
-                    <option value="7" {?start_time_7}selected{/start_time_7}>07:00</option>
-                    <option value="8" {?start_time_8}selected{/start_time_8}>08:00</option>
-                    <option value="9" {?start_time_9}selected{/start_time_9}>09:00</option>
-                    <option value="10" {?start_time_10}selected{/start_time_10}>10:00</option>
-                    <option value="11" {?start_time_11}selected{/start_time_11}>11:00</option>
-                    <option value="12" {?start_time_12}selected{/start_time_12}>12:00</option>
-                    <option value="13" {?start_time_13}selected{/start_time_13}>13:00</option>
-                    <option value="14" {?start_time_14}selected{/start_time_14}>14:00</option>
-                    <option value="15" {?start_time_15}selected{/start_time_15}>15:00</option>
-                    <option value="16" {?start_time_16}selected{/start_time_16}>16:00</option>
-                    <option value="17" {?start_time_17}selected{/start_time_17}>17:00</option>
-                    <option value="18" {?start_time_18}selected{/start_time_18}>18:00</option>
-                    <option value="19" {?start_time_19}selected{/start_time_19}>19:00</option>
-                    <option value="20" {?start_time_20}selected{/start_time_20}>20:00</option>
-                    <option value="21" {?start_time_21}selected{/start_time_21}>21:00</option>
-                    <option value="22" {?start_time_22}selected{/start_time_22}>22:00</option>
-                    <option value="23" {?start_time_23}selected{/start_time_23}>23:00</option>
-                </select>
-            </div>
-
-            <label for="start_day" class="control-label col-sm-2">Start day</label>
-            <div class="col-sm-2">
-                <select class="form-control" id="start_day" name="start_day">
-                    <option value="2" {?start_day_2}selected{/start_day_2}>monday</option>
-                    <option value="3" {?start_day_3}selected{/start_day_3}>tuesday</option>
-                    <option value="4" {?start_day_4}selected{/start_day_4}>wednesday</option>
-                    <option value="5" {?start_day_5}selected{/start_day_5}>thursday</option>
-                    <option value="6" {?start_day_6}selected{/start_day_6}>friday</option>
-                    <option value="7" {?start_day_7}selected{/start_day_7}>saturday</option>
-                    <option value="1" {?start_day_1}selected{/start_day_1}>sunday</option>
-                </select>
+                <input class="form-control" type="checkbox" id="exclude_weekends" name="exclude_weekends" min="0" max="23" {?doc.exclude_weekends}checked="checked"{/doc.exclude_weekends}">
             </div>
         </div>
 
