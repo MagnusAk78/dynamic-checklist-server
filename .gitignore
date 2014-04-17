@@ -1,2 +1,13 @@
 packages/
 .idea/
+
+tools/target/
+tools/project/target/
+tools/project/project/
+tools/*.csv
+tools/*.xlsx
+tools/.cache
+tools/.classpath
+tools/.history
+tools/.project
+tools/.settings/
