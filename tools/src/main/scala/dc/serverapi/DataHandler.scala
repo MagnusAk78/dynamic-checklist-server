@@ -56,9 +56,7 @@ protected object DataHandler {
   }
   
   def getMeasurementsFromServer(getMeasurementsUrl: String) = {
-    pipelineGetMeasurements(
-      Get(getMeasurementsUrl)
-    )    
+    pipelineGetMeasurements(Get(getMeasurementsUrl))    
   }
 
   /*

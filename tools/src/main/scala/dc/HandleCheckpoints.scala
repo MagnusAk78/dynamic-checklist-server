@@ -33,9 +33,9 @@ object HandleCheckpoints {
     MenuPrintAllToFile,
     MenuExit)
 
-  private var cloudantApi: CloudantApi = null
-  private var currentCheckpointFile: java.io.PrintStream = null
-  private var currentMeasurementFile: java.io.PrintStream = null
+  private var currentCloudantApi: Option[CloudantApi] = null
+  private var currentCheckpointFile: Option[java.io.PrintStream] = None
+  private var currentMeasurementFile: Option[java.io.PrintStream] = None
 
   def main(args: Array[String]) {
     try {
@@ -58,13 +58,22 @@ object HandleCheckpoints {
     new java.io.PrintStream(new java.io.FileOutputStream(filename))
   }
   
+  private def getFileName(server: String, database: String, typeOfData: String): String = {
+    val sdf = new SimpleDateFormat("MM_dd");
+    val dateObj = new Date()
+    val dateString = sdf.format(dateObj);
+    server + "_" + database + "_" + typeOfData + dateString + ".csv"
+  }
+
   private def closeFiles() {
-    if (null != currentCheckpointFile) {
-          currentCheckpointFile.close()
-        }
-    if (null != currentMeasurementFile) {
-          currentMeasurementFile.close()
-        }
+    currentCheckpointFile match {
+      case Some(file) => file.close()
+      case None => {}
+    }
+    currentMeasurementFile match {
+      case Some(file) => file.close()
+      case None => {}
+    }
   }
 
   def handleInput() {
@@ -89,22 +98,31 @@ object HandleCheckpoints {
     println("Cloudant database: ")
     val cloudantName = readLine
     println("Database name: ")
-    cloudantApi = CloudantApi(cloudantName, readLine)
-    val sdf = new SimpleDateFormat("MM_dd");
-    val dateObj = new Date()
-    val dateString = sdf.format(dateObj);
-    currentCheckpointFile = getFileWriteStream(cloudantApi.cloudantName + "_" + cloudantApi.databaseName + "_" + "checkpoints" + dateString + ".csv")
-    currentMeasurementFile = getFileWriteStream(cloudantApi.cloudantName + "_" + cloudantApi.databaseName + "_"+ "measurements" + dateString + ".csv")
+    currentCloudantApi = Some(CloudantApi(cloudantName, readLine))
+    
+    currentCloudantApi match {
+      case Some(cloudantApi) => {
+        currentCheckpointFile = Some(getFileWriteStream(getFileName(cloudantApi.cloudantName, cloudantApi.databaseName, "checkpoints")))    
+        currentMeasurementFile = Some(getFileWriteStream(getFileName(cloudantApi.cloudantName, cloudantApi.databaseName, "measurements")))
+            
+      }
+      case None => { println("Not a valid server") }
+    }
+
   }
 
   private def handleListCheckpoints() {
     println("handleCheckpoints")
+    currentCloudantApi match {
+      case Some(cloudantApi) => {
+        val checkpointStreamFuture = cloudantApi.checkpointSequence()
 
-    val checkpointStreamFuture = cloudantApi.checkpointSequence()
-
-    val iterator = Await.result(checkpointStreamFuture, Duration.Inf).iterator
-    while (iterator.hasNext) {
-      println(iterator.next())
+        val iterator = Await.result(checkpointStreamFuture, Duration.Inf).iterator
+        while (iterator.hasNext) {
+          println(iterator.next())
+        }
+      }
+      case None => {}
     }
   }
 
@@ -112,32 +130,49 @@ object HandleCheckpoints {
     println("Checkpoint id: ")
     val checkpointId = readLine
 
-    val measurementStreamFuture = cloudantApi.measurementSequence(checkpointId)
+    currentCloudantApi match {
+      case Some(cloudantApi) => {
+        val measurementStreamFuture = cloudantApi.measurementSequence(checkpointId)
 
-    val iterator = Await.result(measurementStreamFuture, Duration.Inf).iterator
-    while (iterator.hasNext) {
-      println(iterator.next())
+        val iterator = Await.result(measurementStreamFuture, Duration.Inf).iterator
+        while (iterator.hasNext) {
+          println(iterator.next())
+        }
+      }
+      case None => {}
     }
+
   }
 
   private def handlePrintAllToFile() {
     println("handlePrintAllToFile")
 
-    val checkpointStreamFuture = cloudantApi.checkpointSequence()
-    currentCheckpointFile.println(Checkpoint.keysShort(SEPERATOR))
-    currentMeasurementFile.println(Measurement.keysShort(SEPERATOR))
+    currentCloudantApi match {
+      case Some(cloudantApi) => {
 
-    val checkpointIterator = Await.result(checkpointStreamFuture, Duration.Inf).iterator
-    while (checkpointIterator.hasNext) {
-      val checkpoint: Checkpoint = checkpointIterator.next()
-      currentCheckpointFile.println(checkpoint.valuesShort(SEPERATOR))
-      val measurementStreamFuture = cloudantApi.measurementSequence(checkpoint._id)
+        val checkpointFile = currentCheckpointFile.getOrElse(System.out)
+        val measurementFile = currentMeasurementFile.getOrElse(System.out)
 
-      val measurementIterator = Await.result(measurementStreamFuture, Duration.Inf).iterator
-      while (measurementIterator.hasNext) {
-        val measurement = measurementIterator.next()
-        currentMeasurementFile.println(measurement.valuesShort(SEPERATOR, checkpoint.checkpoint_name))
+        val checkpointStreamFuture = cloudantApi.checkpointSequence()
+        checkpointFile.println(Checkpoint.keysShort(SEPERATOR))
+        measurementFile.println(Measurement.keysShort(SEPERATOR))
+
+        val checkpointIterator = Await.result(checkpointStreamFuture, Duration.Inf).iterator
+
+        while (checkpointIterator.hasNext) {
+          val checkpoint: Checkpoint = checkpointIterator.next()
+          checkpointFile.println(checkpoint.valuesShort(SEPERATOR))
+
+          val measurementStreamFuture = cloudantApi.measurementSequence(checkpoint._id)
+
+          val measurementIterator = Await.result(measurementStreamFuture, Duration.Inf).iterator
+          while (measurementIterator.hasNext) {
+            val measurement = measurementIterator.next()
+            measurementFile.println(measurement.valuesShort(SEPERATOR, checkpoint.checkpoint_name))
+          }
+        }
       }
+      case None => {}
     }
   }
 
