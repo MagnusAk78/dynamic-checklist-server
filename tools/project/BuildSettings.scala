@@ -1,5 +1,6 @@
 import sbt._
 import Keys._
+import com.github.retronym.SbtOneJar
 
 object BuildSettings {
   val VERSION = "0.1"
@@ -9,7 +10,8 @@ object BuildSettings {
     organization          := "chalmers",
     description           := "Tools for dynamic checklist server",
     startYear             := Some(2013),
-    scalaVersion          := Dependencies.myScalaVersion,
+    scalaVersion          := Dependencies.myScalaVersion,    
+    exportJars 			  := true,
     resolvers             ++= Dependencies.resolutionRepos,
     scalacOptions         := Seq(
       "-encoding", "utf8",
@@ -19,8 +21,8 @@ object BuildSettings {
       "-target:jvm-1.7",
       "-language:_",
       "-Xlog-reflective-calls"
-    )
+    )    
   )
 
-  lazy val dcHandleCheckpointsSettings = basicSettings
+  lazy val dcHandleCheckpointsSettings = basicSettings ++ SbtOneJar.oneJarSettings
 }

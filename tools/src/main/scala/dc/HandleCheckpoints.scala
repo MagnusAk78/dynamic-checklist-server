@@ -18,6 +18,7 @@ abstract class MenuOption(text: String) {
 }
 case object MenuSetDatabase extends MenuOption("Set database")
 case object MenuListCheckpoints extends MenuOption("List all checkpoints")
+case object MenuCheckForErrors extends MenuOption("Check for errors in checkpints")
 case object MenuListMeasurements extends MenuOption("List measurements by checkpoint")
 case object MenuPrintAllToFile extends MenuOption("Print everything to file")
 case object MenuExit extends MenuOption("Exit")
@@ -29,6 +30,7 @@ object HandleCheckpoints {
   private val menuOptions: List[MenuOption] = List(
     MenuSetDatabase,
     MenuListCheckpoints,
+    MenuCheckForErrors,
     MenuListMeasurements,
     MenuPrintAllToFile,
     MenuExit)
@@ -39,17 +41,15 @@ object HandleCheckpoints {
 
   def main(args: Array[String]) {
     try {
-      while (true) {
+      do {
         println()
         printMenu()
-        handleInput()
-      }
+      } while (handleInput());
     } catch {
       case e: Exception => {
         println(e.getMessage())
         println()
         e.printStackTrace()
-        System.exit(0)
       }
     }
   }
@@ -67,20 +67,22 @@ object HandleCheckpoints {
         }
   }
 
-  def handleInput() {
+  def handleInput(): Boolean = {
     val pos = readInt
-    if (pos < 1 || pos > menuOptions.size) return ;
+    if (pos < 1 || pos > menuOptions.size) return true;
 
     menuOptions(pos - 1) match {
       case MenuSetDatabase => handleSetDatabase()
       case MenuListCheckpoints => handleListCheckpoints()
+      case MenuCheckForErrors => handleCheckForErrors()
       case MenuListMeasurements => handleListMeasurements()
       case MenuPrintAllToFile => handlePrintAllToFile()
       case MenuExit => {
         closeFiles()
-        System.exit(0)
+        return false
       }
     }
+    return true
   }
 
   def handleSetDatabase() {
@@ -106,6 +108,33 @@ object HandleCheckpoints {
     while (iterator.hasNext) {
       println(iterator.next())
     }
+  }
+  
+  private def handleCheckForErrors() {
+    val checkpointStreamFuture = cloudantApi.checkpointSequence()
+    
+    var orderNumbers = List[Int]()
+
+    val iterator = Await.result(checkpointStreamFuture, Duration.Inf).iterator
+    while (iterator.hasNext) {
+      orderNumbers = printErrorsReturnOrderNrs(iterator.next(), orderNumbers)
+    }
+  }
+  
+  private def printErrorsReturnOrderNrs(checkpoint: Checkpoint, orderNumbers: List[Int]): List[Int] = {    
+    if(checkpoint.order_nr < 1) {
+      print("Checkpoint: " + checkpoint.checkpoint_name + " ");
+      println("Order nr is " + checkpoint.order_nr + " it should be over 0: ");
+    } else if(orderNumbers.find(_ == checkpoint.order_nr) == Some) {
+      print("Checkpoint: " + checkpoint.checkpoint_name + " ");
+      println("Order nr already used: " + checkpoint.order_nr);
+    }
+    if(checkpoint.time_days < 1 && checkpoint.time_hours < 1) {
+      print("Checkpoint: " + checkpoint.checkpoint_name + " ");
+      println("Both days and hours can't be below 1");
+    }
+    
+    checkpoint.order_nr :: orderNumbers
   }
 
   def handleListMeasurements() {
