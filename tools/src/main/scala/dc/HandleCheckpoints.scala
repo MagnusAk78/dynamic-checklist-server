@@ -12,6 +12,8 @@ import java.util.Date
 import java.text.SimpleDateFormat
 
 object HandleCheckpoints {
+  
+  var continue: Boolean = true
 
   abstract class MenuOption(text: String) {
     override def toString(): String = {
@@ -20,6 +22,7 @@ object HandleCheckpoints {
 
     def handle()
   }
+  
   case object MenuSetDatabase extends MenuOption("Set database") {
     override def handle() {
       closeFiles()
@@ -39,6 +42,7 @@ object HandleCheckpoints {
       }
     }
   }
+  
   case object MenuListCheckpoints extends MenuOption("List all checkpoints") {
     override def handle() {
       println("handleCheckpoints")
@@ -55,6 +59,7 @@ object HandleCheckpoints {
       }
     }
   }
+  
   case object MenuListMeasurements extends MenuOption("List measurements by checkpoint") {
     override def handle() {
       println("Checkpoint id: ")
@@ -73,6 +78,7 @@ object HandleCheckpoints {
       }
     }
   }
+  
   case object MenuPrintAllToFile extends MenuOption("Print everything to file") {
     override def handle() {
       println("handlePrintAllToFile")
@@ -106,10 +112,11 @@ object HandleCheckpoints {
       }
     }
   }
+  
   case object MenuExit extends MenuOption("Exit") {
     override def handle() {
       closeFiles()
-      System.exit(0)
+      continue = false
     }
   }
 
@@ -128,7 +135,7 @@ object HandleCheckpoints {
 
   def main(args: Array[String]) {
     try {
-      while (true) {
+      while (continue) {
         println()
         printMenu()
         handleInput()
