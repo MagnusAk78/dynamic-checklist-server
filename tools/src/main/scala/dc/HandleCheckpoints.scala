@@ -11,45 +11,134 @@ import ExecutionContext.Implicits.global
 import java.util.Date
 import java.text.SimpleDateFormat
 
-abstract class MenuOption(text: String) {
-  override def toString(): String = {
-    text
-  }
-}
-case object MenuSetDatabase extends MenuOption("Set database")
-case object MenuListCheckpoints extends MenuOption("List all checkpoints")
-case object MenuCheckForErrors extends MenuOption("Check for errors in checkpints")
-case object MenuListMeasurements extends MenuOption("List measurements by checkpoint")
-case object MenuPrintAllToFile extends MenuOption("Print everything to file")
-case object MenuExit extends MenuOption("Exit")
-
 object HandleCheckpoints {
+
+  abstract class MenuOption(text: String) {
+    override def toString(): String = {
+      text
+    }
+
+    def handle()
+  }
+  case object MenuSetDatabase extends MenuOption("Set database") {
+    override def handle() {
+      closeFiles()
+
+      println("Cloudant database: ")
+      val cloudantName = readLine
+      println("Database name: ")
+      currentCloudantApi = Some(CloudantApi(cloudantName, readLine))
+
+      currentCloudantApi match {
+        case Some(cloudantApi) => {
+          currentCheckpointFile = Some(getFileWriteStream(getFileName(cloudantApi.cloudantName, cloudantApi.databaseName, "checkpoints")))
+          currentMeasurementFile = Some(getFileWriteStream(getFileName(cloudantApi.cloudantName, cloudantApi.databaseName, "measurements")))
+
+        }
+        case None => { println("Not a valid server") }
+      }
+    }
+  }
+  case object MenuListCheckpoints extends MenuOption("List all checkpoints") {
+    override def handle() {
+      println("handleCheckpoints")
+      currentCloudantApi match {
+        case Some(cloudantApi) => {
+          val checkpointStreamFuture = cloudantApi.checkpointSequence()
+
+          val iterator = Await.result(checkpointStreamFuture, Duration.Inf).iterator
+          while (iterator.hasNext) {
+            println(iterator.next())
+          }
+        }
+        case None => {}
+      }
+    }
+  }
+  case object MenuListMeasurements extends MenuOption("List measurements by checkpoint") {
+    override def handle() {
+      println("Checkpoint id: ")
+      val checkpointId = readLine
+
+      currentCloudantApi match {
+        case Some(cloudantApi) => {
+          val measurementStreamFuture = cloudantApi.measurementSequence(checkpointId)
+
+          val iterator = Await.result(measurementStreamFuture, Duration.Inf).iterator
+          while (iterator.hasNext) {
+            println(iterator.next())
+          }
+        }
+        case None => {}
+      }
+    }
+  }
+  case object MenuPrintAllToFile extends MenuOption("Print everything to file") {
+    override def handle() {
+      println("handlePrintAllToFile")
+
+      currentCloudantApi match {
+        case Some(cloudantApi) => {
+
+          val checkpointFile = currentCheckpointFile.getOrElse(System.out)
+          val measurementFile = currentMeasurementFile.getOrElse(System.out)
+
+          val checkpointStreamFuture = cloudantApi.checkpointSequence()
+          checkpointFile.println(Checkpoint.keysShort(SEPERATOR))
+          measurementFile.println(Measurement.keysShort(SEPERATOR))
+
+          val checkpointIterator = Await.result(checkpointStreamFuture, Duration.Inf).iterator
+
+          while (checkpointIterator.hasNext) {
+            val checkpoint: Checkpoint = checkpointIterator.next()
+            checkpointFile.println(checkpoint.valuesShort(SEPERATOR))
+
+            val measurementStreamFuture = cloudantApi.measurementSequence(checkpoint._id)
+
+            val measurementIterator = Await.result(measurementStreamFuture, Duration.Inf).iterator
+            while (measurementIterator.hasNext) {
+              val measurement = measurementIterator.next()
+              measurementFile.println(measurement.valuesShort(SEPERATOR, checkpoint.checkpoint_name))
+            }
+          }
+        }
+        case None => {}
+      }
+    }
+  }
+  case object MenuExit extends MenuOption("Exit") {
+    override def handle() {
+      closeFiles()
+      System.exit(0)
+    }
+  }
 
   private val SEPERATOR = ","
 
   private val menuOptions: List[MenuOption] = List(
     MenuSetDatabase,
     MenuListCheckpoints,
-    MenuCheckForErrors,
     MenuListMeasurements,
     MenuPrintAllToFile,
     MenuExit)
 
-  private var cloudantApi: CloudantApi = null
-  private var currentCheckpointFile: java.io.PrintStream = null
-  private var currentMeasurementFile: java.io.PrintStream = null
+  private var currentCloudantApi: Option[CloudantApi] = None
+  private var currentCheckpointFile: Option[java.io.PrintStream] = None
+  private var currentMeasurementFile: Option[java.io.PrintStream] = None
 
   def main(args: Array[String]) {
     try {
-      do {
+      while (true) {
         println()
         printMenu()
-      } while (handleInput());
+        handleInput()
+      }
     } catch {
       case e: Exception => {
         println(e.getMessage())
         println()
         e.printStackTrace()
+        System.exit(0)
       }
     }
   }
@@ -57,117 +146,36 @@ object HandleCheckpoints {
   private def getFileWriteStream(filename: String): java.io.PrintStream = {
     new java.io.PrintStream(new java.io.FileOutputStream(filename))
   }
-  
-  private def closeFiles() {
-    if (null != currentCheckpointFile) {
-          currentCheckpointFile.close()
-        }
-    if (null != currentMeasurementFile) {
-          currentMeasurementFile.close()
-        }
-  }
 
-  def handleInput(): Boolean = {
-    val pos = readInt
-    if (pos < 1 || pos > menuOptions.size) return true;
-
-    menuOptions(pos - 1) match {
-      case MenuSetDatabase => handleSetDatabase()
-      case MenuListCheckpoints => handleListCheckpoints()
-      case MenuCheckForErrors => handleCheckForErrors()
-      case MenuListMeasurements => handleListMeasurements()
-      case MenuPrintAllToFile => handlePrintAllToFile()
-      case MenuExit => {
-        closeFiles()
-        return false
-      }
-    }
-    return true
-  }
-
-  def handleSetDatabase() {
-    closeFiles()
-
-    println("Cloudant database: ")
-    val cloudantName = readLine
-    println("Database name: ")
-    cloudantApi = CloudantApi(cloudantName, readLine)
+  private def getFileName(server: String, database: String, typeOfData: String): String = {
     val sdf = new SimpleDateFormat("MM_dd");
     val dateObj = new Date()
     val dateString = sdf.format(dateObj);
-    currentCheckpointFile = getFileWriteStream(cloudantApi.cloudantName + "_" + cloudantApi.databaseName + "_" + "checkpoints" + dateString + ".csv")
-    currentMeasurementFile = getFileWriteStream(cloudantApi.cloudantName + "_" + cloudantApi.databaseName + "_"+ "measurements" + dateString + ".csv")
+    server + "_" + database + "_" + typeOfData + dateString + ".csv"
   }
 
-  private def handleListCheckpoints() {
-    println("handleCheckpoints")
-
-    val checkpointStreamFuture = cloudantApi.checkpointSequence()
-
-    val iterator = Await.result(checkpointStreamFuture, Duration.Inf).iterator
-    while (iterator.hasNext) {
-      println(iterator.next())
-    }
-  }
-  
-  private def handleCheckForErrors() {
-    val checkpointStreamFuture = cloudantApi.checkpointSequence()
-    
-    var orderNumbers = List[Int]()
-
-    val iterator = Await.result(checkpointStreamFuture, Duration.Inf).iterator
-    while (iterator.hasNext) {
-      orderNumbers = printErrorsReturnOrderNrs(iterator.next(), orderNumbers)
-    }
-  }
-  
-  private def printErrorsReturnOrderNrs(checkpoint: Checkpoint, orderNumbers: List[Int]): List[Int] = {    
-    if(checkpoint.order_nr < 1) {
-      print("Checkpoint: " + checkpoint.checkpoint_name + " ");
-      println("Order nr is " + checkpoint.order_nr + " it should be over 0: ");
-    } else if(orderNumbers.find(_ == checkpoint.order_nr) == Some) {
-      print("Checkpoint: " + checkpoint.checkpoint_name + " ");
-      println("Order nr already used: " + checkpoint.order_nr);
-    }
-    if(checkpoint.time_days < 1 && checkpoint.time_hours < 1) {
-      print("Checkpoint: " + checkpoint.checkpoint_name + " ");
-      println("Both days and hours can't be below 1");
-    }
-    
-    checkpoint.order_nr :: orderNumbers
-  }
-
-  def handleListMeasurements() {
-    println("Checkpoint id: ")
-    val checkpointId = readLine
-
-    val measurementStreamFuture = cloudantApi.measurementSequence(checkpointId)
-
-    val iterator = Await.result(measurementStreamFuture, Duration.Inf).iterator
-    while (iterator.hasNext) {
-      println(iterator.next())
-    }
-  }
-
-  private def handlePrintAllToFile() {
-    println("handlePrintAllToFile")
-
-    val checkpointStreamFuture = cloudantApi.checkpointSequence()
-    currentCheckpointFile.println(Checkpoint.keysShort(SEPERATOR))
-    currentMeasurementFile.println(Measurement.keysShort(SEPERATOR))
-
-    val checkpointIterator = Await.result(checkpointStreamFuture, Duration.Inf).iterator
-    while (checkpointIterator.hasNext) {
-      val checkpoint: Checkpoint = checkpointIterator.next()
-      currentCheckpointFile.println(checkpoint.valuesShort(SEPERATOR))
-      val measurementStreamFuture = cloudantApi.measurementSequence(checkpoint._id)
-
-      val measurementIterator = Await.result(measurementStreamFuture, Duration.Inf).iterator
-      while (measurementIterator.hasNext) {
-        val measurement = measurementIterator.next()
-        currentMeasurementFile.println(measurement.valuesShort(SEPERATOR, checkpoint.checkpoint_name))
+  private def closeFiles() {
+    currentCheckpointFile match {
+      case Some(file) => {
+        file.close()
+        currentCheckpointFile = None
       }
+      case None => {}
     }
+    currentMeasurementFile match {
+      case Some(file) => {
+        file.close()
+        currentMeasurementFile = None
+      }
+      case None => {}
+    }
+  }
+
+  def handleInput() {
+    val pos = readInt
+    if (pos < 1 || pos > menuOptions.size) return ;
+
+    menuOptions(pos - 1).handle()
   }
 
   private def printMenu() {

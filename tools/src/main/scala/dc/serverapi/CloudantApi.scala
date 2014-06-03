@@ -6,11 +6,25 @@ import scala.concurrent.Future
 class CloudantApi(val cloudantName: String, val databaseName: String) {
 
   private val baseUrl = "http://" + this.cloudantName + ".cloudant.com/" + databaseName + "/"
-  
+
   private val checkpointsViewUrl = baseUrl + "_design/dc_server_app/_view/checkpoints"
-  
+  private val measurementViewUrl = "_design/dc_server_app/_view/measurements"
+
+  private val quoteUrlStr = "%22"
+  private val leftBracketUrlStr = "%5B"
+  private val rightBracketUrlStr = "%5D"
+
   private def measurementsViewUrl(checkpointId: String): String = {
-    baseUrl + "_design/dc_server_app/_view/measurements" + "?startkey=[%22" + checkpointId + "%22,{}]&endkey=[%22" + checkpointId + "%22]&descending=true"
+    val checkpointInQuotes = quoteUrlStr + checkpointId + quoteUrlStr
+    baseUrl + measurementViewUrl + startKeyEndKeyUrl(withinBracketsString(checkpointInQuotes + ",{}"), withinBracketsString(checkpointInQuotes), true)
+  }
+
+  private def startKeyEndKeyUrl(startKey: String, endKey: String, descending: Boolean): String = {
+    "?startkey=" + startKey + "&endkey=" + endKey + (if (descending) "&descending=true" else "")
+  }
+
+  private def withinBracketsString(input: String): String = {
+    leftBracketUrlStr + input + rightBracketUrlStr
   }
 
   def checkpointSequence(): Future[Stream[Checkpoint]] = DataHandler.getCheckpointsFromServer(checkpointsViewUrl)
