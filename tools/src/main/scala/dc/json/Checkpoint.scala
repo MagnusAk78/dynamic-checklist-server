@@ -26,6 +26,10 @@ case class Checkpoint(_id: String,
   def valuesShort(separator: String): String = {
     _id + separator + checkpoint_name + separator + order_nr + separator + time_days + separator + time_hours + separator + exclude_weekends;  
   }
+  
+  override def toString: String = {
+    "id : " + _id + ',' + " name : " + checkpoint_name + ',' + " order nr : " + order_nr + ',' + " days : " + time_days + ',' + " hours : " + time_hours + ',' + " exclude weekends : " + exclude_weekends
+  }
 }
 
 object Checkpoint extends DefaultJsonProtocol {

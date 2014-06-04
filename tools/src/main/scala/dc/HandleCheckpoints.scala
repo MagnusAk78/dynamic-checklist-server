@@ -16,9 +16,7 @@ object HandleCheckpoints {
   var continue: Boolean = true
 
   abstract class MenuOption(text: String) {
-    override def toString(): String = {
-      text
-    }
+    override def toString = text
 
     def handle()
   }
@@ -116,18 +114,18 @@ object HandleCheckpoints {
   case object MenuExit extends MenuOption("Exit") {
     override def handle() {
       closeFiles()
-      continue = false
+      HandleCheckpoints.continue = false
     }
   }
 
   private val SEPERATOR = ","
 
-  private val menuOptions: List[MenuOption] = List(
-    MenuSetDatabase,
-    MenuListCheckpoints,
-    MenuListMeasurements,
-    MenuPrintAllToFile,
-    MenuExit)
+  private val menuOptions: Map[Int, MenuOption] = Map(
+    1 -> MenuSetDatabase,
+    2 -> MenuListCheckpoints,
+    3 -> MenuListMeasurements,
+    4 -> MenuPrintAllToFile,
+    5 -> MenuExit)
 
   private var currentCloudantApi: Option[CloudantApi] = None
   private var currentCheckpointFile: Option[java.io.PrintStream] = None
@@ -145,7 +143,6 @@ object HandleCheckpoints {
         println(e.getMessage())
         println()
         e.printStackTrace()
-        System.exit(0)
       }
     }
   }
@@ -180,18 +177,15 @@ object HandleCheckpoints {
 
   def handleInput() {
     val pos = readInt
-    if (pos < 1 || pos > menuOptions.size) return ;
+    if (pos < 1 || pos > menuOptions.size) 
+      return
 
-    menuOptions(pos - 1).handle()
+    menuOptions(pos).handle()
   }
 
   private def printMenu() {
     println("HandleCheckpoints menu")
     println("")
-    var i: Int = 1
-    menuOptions.foreach((menuOption: MenuOption) => {
-      println(i.toString + " " + menuOption.toString)
-      i += 1
-    })
+    menuOptions.foreach{ case (nr, menuOption) => println(nr + ": " + menuOption.toString) }
   }
 }
