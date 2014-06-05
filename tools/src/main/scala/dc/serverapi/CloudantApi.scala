@@ -36,4 +36,8 @@ object CloudantApi {
   def apply(cloudantName: String, databaseName: String): CloudantApi = {
     new CloudantApi(cloudantName, databaseName)
   }
+  
+  def shutdown {
+    DataHandler.shutdownSystem
+  }
 }

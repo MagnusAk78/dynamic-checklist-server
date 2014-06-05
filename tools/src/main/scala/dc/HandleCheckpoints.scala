@@ -1,15 +1,15 @@
 package dc
 
-import spray.http.HttpResponse
+import java.text.SimpleDateFormat
+import java.util.Date
+
+import scala.collection.SortedMap
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
+
 import dc.json.Checkpoint
 import dc.json.Measurement
 import dc.serverapi.CloudantApi
-import scala.util.{ Success, Failure }
-import scala.concurrent._
-import scala.concurrent.duration._
-import ExecutionContext.Implicits.global
-import java.util.Date
-import java.text.SimpleDateFormat
 
 object HandleCheckpoints {
   
@@ -113,14 +113,18 @@ object HandleCheckpoints {
   
   case object MenuExit extends MenuOption("Exit") {
     override def handle() {
+      println("MenuExit.handle START")
       closeFiles()
+      println("closeFiles() done")
       HandleCheckpoints.continue = false
+      println("")
+      println("MenuExit.handle END")
     }
   }
 
   private val SEPERATOR = ","
 
-  private val menuOptions: Map[Int, MenuOption] = Map(
+  private val menuOptions: SortedMap[Int, MenuOption] = SortedMap(
     1 -> MenuSetDatabase,
     2 -> MenuListCheckpoints,
     3 -> MenuListMeasurements,
@@ -138,6 +142,7 @@ object HandleCheckpoints {
         printMenu()
         handleInput()
       }
+      println("Out of while loop")
     } catch {
       case e: Exception => {
         println(e.getMessage())
@@ -145,6 +150,12 @@ object HandleCheckpoints {
         e.printStackTrace()
       }
     }
+    
+    println("Before CloudantApi.shutdown")
+    
+    CloudantApi.shutdown
+    
+    println("END of program")
   }
 
   private def getFileWriteStream(filename: String): java.io.PrintStream = {
@@ -159,6 +170,7 @@ object HandleCheckpoints {
   }
 
   private def closeFiles() {
+    println("closeFiles START")
     currentCheckpointFile match {
       case Some(file) => {
         file.close()
@@ -173,10 +185,15 @@ object HandleCheckpoints {
       }
       case None => {}
     }
+    println("closeFiles END")
   }
 
   def handleInput() {
     val pos = readInt
+    
+    println("menuOptions.size: " + menuOptions.size) 
+    println("pos: " + pos)
+    
     if (pos < 1 || pos > menuOptions.size) 
       return
 
@@ -184,7 +201,8 @@ object HandleCheckpoints {
   }
 
   private def printMenu() {
-    println("HandleCheckpoints menu")
+    println("")
+    println("Options")
     println("")
     menuOptions.foreach{ case (nr, menuOption) => println(nr + ": " + menuOption.toString) }
   }
