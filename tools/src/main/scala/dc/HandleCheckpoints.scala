@@ -113,12 +113,8 @@ object HandleCheckpoints {
   
   case object MenuExit extends MenuOption("Exit") {
     override def handle() {
-      println("MenuExit.handle START")
       closeFiles()
-      println("closeFiles() done")
       HandleCheckpoints.continue = false
-      println("")
-      println("MenuExit.handle END")
     }
   }
 
@@ -142,7 +138,6 @@ object HandleCheckpoints {
         printMenu()
         handleInput()
       }
-      println("Out of while loop")
     } catch {
       case e: Exception => {
         println(e.getMessage())
@@ -151,11 +146,8 @@ object HandleCheckpoints {
       }
     }
     
-    println("Before CloudantApi.shutdown")
-    
+    //This is needed to terminate the program
     CloudantApi.shutdown
-    
-    println("END of program")
   }
 
   private def getFileWriteStream(filename: String): java.io.PrintStream = {
@@ -170,7 +162,6 @@ object HandleCheckpoints {
   }
 
   private def closeFiles() {
-    println("closeFiles START")
     currentCheckpointFile match {
       case Some(file) => {
         file.close()
@@ -185,15 +176,10 @@ object HandleCheckpoints {
       }
       case None => {}
     }
-    println("closeFiles END")
   }
 
   def handleInput() {
     val pos = readInt
-    
-    println("menuOptions.size: " + menuOptions.size) 
-    println("pos: " + pos)
-    
     if (pos < 1 || pos > menuOptions.size) 
       return
 

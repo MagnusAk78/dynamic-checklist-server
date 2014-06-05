@@ -14,7 +14,7 @@ object Build extends Build {
   // Main Project
   // -------------------------------------------------------------------------------------------------------------------
 
-  lazy val main = Project("main",file("."))
+  lazy val main = Project("dctools",file("."))
     .settings(dcHandleCheckpointsSettings: _*)
     .settings(libraryDependencies ++= dcHandleCheckpointsDependencies)
 }
